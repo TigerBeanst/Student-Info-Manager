@@ -9,13 +9,6 @@ import javax.swing.*;
  */
 
 public class ClickAction {
-    public static boolean clickInsertCheck(String sSpecialty){
-        if(sSpecialty.contains("班")){
-            return true;
-        }else {
-            return false;
-        }
-    }
 
     public static void clickInsertDialog(){
         JOptionPane.showMessageDialog(null,

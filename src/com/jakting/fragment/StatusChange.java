@@ -29,7 +29,7 @@ public class StatusChange extends JFrame implements ActionListener {
     JButton jBQuery = null;//查询
     JButton jBQueryAll = null;//查询所有记录
     JButton jBInsert = null;//插入
-    JButton jBUpRewardDate = null;//更新
+    JButton jBupdate = null;//更新
     JButton jBDeleteCurrentRecord = null;//删除当前记录
     JButton jBDeleteAllRecords = null;//删除所有记录
 
@@ -63,7 +63,7 @@ public class StatusChange extends JFrame implements ActionListener {
 
         jBQueryAll = new JButton("查询所有记录");
         jBInsert = new JButton("插入");
-        jBUpRewardDate = new JButton("更新");
+        jBupdate = new JButton("更新");
         jBDeleteCurrentRecord = new JButton("删除当前记录");
         jBDeleteAllRecords = new JButton("删除所有记录");
 
@@ -107,7 +107,7 @@ public class StatusChange extends JFrame implements ActionListener {
         jBQuery.addActionListener(this);
         jBQueryAll.addActionListener(this);
         jBInsert.addActionListener(this);
-        jBUpRewardDate.addActionListener(this);
+        jBupdate.addActionListener(this);
         jBDeleteCurrentRecord.addActionListener(this);
         jBDeleteAllRecords.addActionListener(this);
 
@@ -166,7 +166,7 @@ public class StatusChange extends JFrame implements ActionListener {
         jP5.setPreferredSize(new Dimension(50, 50));
 
         jP6.add(jBInsert);
-        jP6.add(jBUpRewardDate);
+        jP6.add(jBupdate);
         jP6.add(jBDeleteCurrentRecord);
         jP6.add(jBDeleteAllRecords);
         jP6.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -229,7 +229,7 @@ public class StatusChange extends JFrame implements ActionListener {
                 && !jTFSRewardDate.getText().isEmpty()
                 && !jTFSReward.getText().isEmpty()) {
             System.out.println("actionPerformed(). 更新");
-            upRewardDateProcess();
+            updateProcess();
         } else if (e.getActionCommand().equals("删除当前记录")) {
             System.out.println("actionPerformed(). 删除当前记录");
             deleteCurrentRecordProcess();
@@ -252,7 +252,7 @@ public class StatusChange extends JFrame implements ActionListener {
             // 将查询获得的记录数据，转换成适合生成JTable的数据形式
             studentVector.clear();
             while (rs.next()) {
-                Vector v = new Vector();
+                Vector v =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       new Vector();
                 v.add(Integer.valueOf(rs.getInt("sRewardDate")));
                 v.add(rs.getString("sReward"));
                 studentVector.add(v);
@@ -337,19 +337,19 @@ public class StatusChange extends JFrame implements ActionListener {
 
     }
 
-    public void upRewardDateProcess() {
+    public void updateProcess() {
         String sNo = jTFSNo.getText().trim();
         String sRewardDate = jTFSRewardDate.getText().trim();
         String sReward = jTFSReward.getText().trim();
 
-        String sql = "upRewardDate student set sRewardDate = ";
+        String sql = "update student set sRewardDate = ";
         sql = sql + sRewardDate + ", sReward = '";
         sql = sql + sReward + "'";
         sql = sql + " WHERE sNo = " + sNo + ";";
-        System.out.println("upRewardDateProcess(). sql = " + sql);
+        System.out.println("updateProcess(). sql = " + sql);
         try {
             if (dbProcess.executeUpdate(sql) < 1) {
-                System.out.println("upRewardDateProcess(). upRewardDate database failed.");
+                System.out.println("updateProcess(). update database failed.");
             }
         } catch (Exception e) {
             System.out.println("e = " + e);
