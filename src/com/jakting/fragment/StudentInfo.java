@@ -60,7 +60,7 @@ public class StudentInfo extends JFrame implements ActionListener {
         jLSName = new JLabel("姓名");
         jLSSex = new JLabel("性别");
         jLSClass = new JLabel("班级");
-        jLSDepartment = new JLabel("专业");
+        jLSDepartment = new JLabel("学院");
         jLSBirthday = new JLabel("生日");
         jLSNativePlace = new JLabel("籍贯");
 
@@ -69,7 +69,7 @@ public class StudentInfo extends JFrame implements ActionListener {
         jTFSName = new JTextField(10);//姓名
         jTFSSex = new JTextField(10);//性别
         jTFSClass = new JTextField(10);//班级
-        jTFSDepartment = new JTextField(10);//专业
+        jTFSDepartment = new JTextField(10);//学院
         jTFSBirthday = new JTextField(10);//年龄
         jTFSNativePlace = new JTextField(10);//籍贯
 
@@ -97,9 +97,12 @@ public class StudentInfo extends JFrame implements ActionListener {
         studentJTable.setPreferredScrollableViewportSize(new Dimension(800, 250));
         int[] i = {0, 1, 2, 3, 4, 5, 6};
         TableAdjust.setSomeColumnSize(studentJTable, i, 52, 52, 52);
-        TableAdjust.setOneColumnSize(studentJTable, 3, 100, 100, 52);
-        TableAdjust.setOneColumnSize(studentJTable, 4, 168, 168, 52);
-        TableAdjust.setOneColumnSize(studentJTable, 5, 135, 135, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 0, 110, 110, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 1, 70, 70, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 3, 200, 200, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 4, 172, 172, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 5, 100, 100, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 6, 70, 70, 52);
         studentJScrollPane = new JScrollPane(studentJTable);
         //分别设置水平和垂直滚动条自动出现
         studentJScrollPane.setHorizontalScrollBarPolicy(
@@ -116,12 +119,13 @@ public class StudentInfo extends JFrame implements ActionListener {
                 v = (Vector) studentVector.get(row);
 
                 jTFSStudentID.setText(Integer.toString((int) v.get(0)));// 学号
+                jTFSStudentID.setEditable(false);
                 jTFSName.setText((String) v.get(1));// 姓名
                 jTFSSex.setText((String) v.get(2));// 性别
-                jTFSClass.setText((String) v.get(7));// 班级
-                jTFSDepartment.setText((String) v.get(6));// 学院
-                jTFSBirthday.setText((String) v.get(4));// 生日
-                jTFSNativePlace.setText((String) v.get(8));// 籍贯
+                jTFSClass.setText((String) v.get(3));// 班级
+                jTFSDepartment.setText((String) v.get(4));// 学院
+                jTFSBirthday.setText((String) v.get(5));// 生日
+                jTFSNativePlace.setText((String) v.get(6));// 籍贯
             }
         });
 
@@ -240,6 +244,7 @@ public class StudentInfo extends JFrame implements ActionListener {
                     jTFSDepartment.setText("");
                     jTFSBirthday.setText("");
                     jTFSNativePlace.setText("");
+                    jTFSStudentID.setEditable(true);
                 }
             });
         }
@@ -289,10 +294,10 @@ public class StudentInfo extends JFrame implements ActionListener {
     public void queryProcess(String sQueryField) {
         try {
             // 建立查询条件
-            String sql = "select * from student where ";
+            String sql = "select * from student inner join class on class.cID = student.Class inner join department on department.dID = student.Department where ";
             String queryFieldStr = jCBSelectQueryFieldTransfer(SelectQueryFieldStr);
 
-            if (queryFieldStr.equals("StudentID") || queryFieldStr.equals("Class") || queryFieldStr.equals("Department")) {
+            if (queryFieldStr.equals("StudentID")) {
                 sql = sql + queryFieldStr;
                 sql = sql + " = " + sQueryField;
             } else {
@@ -313,8 +318,8 @@ public class StudentInfo extends JFrame implements ActionListener {
                 v.add(Integer.valueOf(rs.getInt("StudentID")));
                 v.add(rs.getString("sName"));
                 v.add(rs.getString("sSex"));
-                v.add(Integer.valueOf(rs.getInt("Class")));
-                v.add(Integer.valueOf(rs.getInt("Department")));
+                v.add(rs.getString("class.cClassName"));
+                v.add(rs.getString("department.dDepName"));
                 v.add(rs.getString("sBirthday"));
                 v.add(rs.getString("sNativePlace"));
                 studentVector.add(v);
@@ -339,7 +344,7 @@ public class StudentInfo extends JFrame implements ActionListener {
             public void run() {
                 try {
                     // 建立查询条件
-                    String sql = "select * from student inner join class on class.cID = student.Class and inner join department on department.dID = student.Department;";
+                    String sql = "select * from student inner join class on class.cID = student.Class inner join department on department.dID = student.Department;";
                     System.out.println("queryAllProcess(). sql = " + sql);
 
                     dbProcess.connect();
@@ -379,14 +384,27 @@ public class StudentInfo extends JFrame implements ActionListener {
         String Department = jTFSDepartment.getText().trim();
         String sBirthday = jTFSBirthday.getText().trim();
         String sNativePlace = jTFSNativePlace.getText().trim();
+        int trueClass = 0,trueDept=0;
+
+        String getClassDepartment = "select class.cID,department.dID from student,class,department where class.cClassName = '"+Class+"' and department.dDepName='"+Department+"';";
+        System.out.println("getClassDepartment. sql = " + getClassDepartment);
+        dbProcess.connect();
+        ResultSet rs = dbProcess.executeQuery(getClassDepartment);
+        try {
+            trueClass = rs.getInt("cID");
+            trueDept =  rs.getInt("dID");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        dbProcess.disconnect();
 
         // 建立插入条件
         String sql = "insert into student values(";
         sql = sql + StudentID + ",'";
         sql = sql + sName + "','";
         sql = sql + sSex + "',";
-        sql = sql + Class + ",";
-        sql = sql + Department + ",'";
+        sql = sql + trueClass + ",";
+        sql = sql + trueDept + ",'";
         sql = sql + sBirthday + "','";
         sql = sql + sNativePlace + "');";
 
@@ -412,16 +430,29 @@ public class StudentInfo extends JFrame implements ActionListener {
         String Department = jTFSDepartment.getText().trim();
         String sBirthday = jTFSBirthday.getText().trim();
         String sNativePlace = jTFSNativePlace.getText().trim();
-
+        int trueClass = 0,trueDept=0;
+        String getClassDepartment = "select class.cID,department.dID from student,class,department where class.cClassName = '"+Class+"' and department.dDepName='"+Department+"';";
+        System.out.println("getClassDepartment. sql = " + getClassDepartment);
+        dbProcess.connect();
+        ResultSet rs = dbProcess.executeQuery(getClassDepartment);
+        try {
+            while (rs.next()) {
+                trueClass = rs.getInt("cID");
+                trueDept = rs.getInt("dID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        dbProcess.disconnect();
         // 建立更新条件
         String sql = "update student set sName = '";
         sql = sql + sName + "', sSex = '";
         sql = sql + sSex + "', Class = ";
-        sql = sql + Class + ", Department = ";
-        sql = sql + Department + ", sBirthday = '";
+        sql = sql + trueClass + ", Department = ";
+        sql = sql + trueDept + ", sBirthday = '";
         sql = sql + sBirthday + "', sNativePlace = '";
         sql = sql + sNativePlace + "'";
-        sql = sql + " WHERE sNo = " + StudentID + ";";
+        sql = sql + " WHERE StudentID = " + StudentID + ";";
         System.out.println("updateProcess(). sql = " + sql);
         try {
             if (dbProcess.executeUpdate(sql) < 1) {
