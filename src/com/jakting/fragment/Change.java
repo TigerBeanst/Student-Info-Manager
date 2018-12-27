@@ -11,26 +11,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
-public class StudentInfo extends JFrame implements ActionListener {
+public class Change extends JFrame implements ActionListener {
     JLabel jLStudentInfoTable = null;//学生信息表
     JLabel jLSelectQueryField = null;//选择查询字段
     JLabel jLEqual = null;//=
+    JLabel jLSID = null;//序号
     JLabel jLSStudentID = null;//学号
-    JLabel jLSName = null;//姓名
-    JLabel jLSSex = null;//性别
-    JLabel jLSClass = null;//班级
-    JLabel jLSDepartment = null;//学院
-    JLabel jLSBirthday = null;//生日
-    JLabel jLSNativePlace = null;//籍贯
+    JLabel jLSChange = null;//学籍奖项
+    JLabel jLSRecTime = null;//学籍时间
+    JLabel jLSDesc = null;//学籍详情
 
     JTextField jTFQueryField = null;//查询字段
+    JTextField jTFSID = null;//学号
     JTextField jTFSStudentID = null;//学号
-    JTextField jTFSName = null;//姓名
-    JTextField jTFSSex = null;//性别
-    JTextField jTFSClass = null;//班级
-    JTextField jTFSDepartment = null;//学院
-    JTextField jTFSBirthday = null;//生日
-    JTextField jTFSNativePlace = null;//籍贯
+    JTextField jTFSChange = null;//学籍奖项
+    JTextField jTFSRecTime = null;//学籍时间
+    JTextField jTFSDesc = null;//学籍详情
 
     JButton jBQuery = null;//查询
     JButton jBQueryAll = null;//查询所有记录
@@ -41,6 +37,7 @@ public class StudentInfo extends JFrame implements ActionListener {
 
     //JComboBox jCBSelectQueryField = null;
     JComboBox<String> jCBSelectQueryField = null;//查询字段
+    JComboBox<String> jCBSelectChangeField = null;//查询字段
     JPanel jP1, jP2, jP3, jP4, jP5, jP6 = null;
     JPanel jPTop, jPBottom = null;
     DefaultTableModel studentTableModel = null;
@@ -50,28 +47,27 @@ public class StudentInfo extends JFrame implements ActionListener {
     Vector titleVector = null;
     private static DbProcess dbProcess;
     String SelectQueryFieldStr = "学号";
+    String SelectChangeFieldStr = "转系";
 
     //构造函数
-    public StudentInfo() {
-        jLStudentInfoTable = new JLabel("学生信息统计表");
+    public Change() {
+        jLStudentInfoTable = new JLabel("学生学籍变更情况统计表");
         jLSelectQueryField = new JLabel("选择查询字段");
         jLEqual = new JLabel(" = ");
+        jLSID = new JLabel("序号");
         jLSStudentID = new JLabel("学号");
-        jLSName = new JLabel("姓名");
-        jLSSex = new JLabel("性别");
-        jLSClass = new JLabel("班级");
-        jLSDepartment = new JLabel("学院");
-        jLSBirthday = new JLabel("生日");
-        jLSNativePlace = new JLabel("籍贯");
+        jLSChange = new JLabel("学籍");
+        jLSRecTime = new JLabel("时间");
+        jLSDesc = new JLabel("详情");
 
         jTFQueryField = new JTextField(10);//查询字段
+        jTFSID = new JTextField(10);//学号
         jTFSStudentID = new JTextField(10);//学号
-        jTFSName = new JTextField(10);//姓名
-        jTFSSex = new JTextField(10);//性别
-        jTFSClass = new JTextField(10);//班级
-        jTFSDepartment = new JTextField(10);//学院
-        jTFSBirthday = new JTextField(10);//年龄
-        jTFSNativePlace = new JTextField(10);//籍贯
+        //jTFSChange = new JTextField(10);//学籍
+        jTFSRecTime = new JTextField(10);//时间
+        jTFSDesc = new JTextField(10);//详情
+
+        jTFSRecTime.setToolTipText("格式：年/月/日，例如：2018-12-25");
 
         jBQuery = new JButton("查询");
 
@@ -85,24 +81,21 @@ public class StudentInfo extends JFrame implements ActionListener {
         titleVector = new Vector();
 
         // 定义表头
+        titleVector.add("序号");
         titleVector.add("学号");
-        titleVector.add("姓名");
-        titleVector.add("性别");
-        titleVector.add("班级");
-        titleVector.add("学院");
-        titleVector.add("生日");
-        titleVector.add("籍贯");
+        titleVector.add("学籍");
+        titleVector.add("时间");
+        titleVector.add("详情");
         //studentTableModel = new DefaultTableModel(tableTitle, 15);
         studentJTable = new JTable(studentVector, titleVector);
         studentJTable.setPreferredScrollableViewportSize(new Dimension(800, 250));
-        int[] i = {0, 1, 2, 3, 4, 5, 6};
-        TableAdjust.setSomeColumnSize(studentJTable, i, 52, 52, 52);
-        TableAdjust.setOneColumnSize(studentJTable, 0, 110, 110, 52);
-        TableAdjust.setOneColumnSize(studentJTable, 1, 70, 70, 52);
-        TableAdjust.setOneColumnSize(studentJTable, 3, 200, 200, 52);
-        TableAdjust.setOneColumnSize(studentJTable, 4, 172, 172, 52);
-        TableAdjust.setOneColumnSize(studentJTable, 5, 100, 100, 52);
-        TableAdjust.setOneColumnSize(studentJTable, 6, 70, 70, 52);
+        //int[] i = {0, 1, 2, 3};
+        //TableAdjust.setSomeColumnSize(studentJTable, i, 52, 52, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 0, 52, 52, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 1, 100, 100, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 2, 100, 100, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 3, 100, 100, 52);
+        TableAdjust.setOneColumnSize(studentJTable, 4, 420, 420, 52);
         studentJScrollPane = new JScrollPane(studentJTable);
         //分别设置水平和垂直滚动条自动出现
         studentJScrollPane.setHorizontalScrollBarPolicy(
@@ -118,14 +111,14 @@ public class StudentInfo extends JFrame implements ActionListener {
                 Vector v = new Vector();
                 v = (Vector) studentVector.get(row);
 
-                jTFSStudentID.setText(Integer.toString((int) v.get(0)));// 学号
-                jTFSStudentID.setEditable(false);
-                jTFSName.setText((String) v.get(1));// 姓名
-                jTFSSex.setText((String) v.get(2));// 性别
-                jTFSClass.setText((String) v.get(3));// 班级
-                jTFSDepartment.setText((String) v.get(4));// 学院
-                jTFSBirthday.setText((String) v.get(5));// 生日
-                jTFSNativePlace.setText((String) v.get(6));// 籍贯
+                jTFSID.setText(Integer.toString((int) v.get(0)));// 学号
+                jTFSID.setEditable(false);
+                jTFSStudentID.setText(Integer.toString((int) v.get(1)));// 学号
+                //jCBSelectChangeField.setSelectedItem(v.get(1));
+                jTFSChange.setText((String) v.get(2));// 学籍
+                System.out.println("jTFSChange:==" + (String) v.get(2));
+                jTFSRecTime.setText((String) v.get(3));// 时间
+                jTFSDesc.setText((String) v.get(4));// 详情
             }
         });
 
@@ -140,18 +133,36 @@ public class StudentInfo extends JFrame implements ActionListener {
 
         jCBSelectQueryField = new JComboBox<String>();//查询字段
         jCBSelectQueryField.addItem("学号");
-        jCBSelectQueryField.addItem("姓名");
-        jCBSelectQueryField.addItem("性别");
-        jCBSelectQueryField.addItem("班级");
-        jCBSelectQueryField.addItem("学院");
-        jCBSelectQueryField.addItem("生日");
-        jCBSelectQueryField.addItem("籍贯");
+        jCBSelectQueryField.addItem("学籍");
+        jCBSelectQueryField.addItem("时间");
+        jCBSelectQueryField.addItem("详情");
         jCBSelectQueryField.addItemListener(new ItemListener() {//下拉框事件监听
             public void itemStateChanged(ItemEvent event) {
                 switch (event.getStateChange()) {
                     case ItemEvent.SELECTED:
                         SelectQueryFieldStr = (String) event.getItem();
                         System.out.println("选中：" + SelectQueryFieldStr);
+                        break;
+                    case ItemEvent.DESELECTED:
+                        System.out.println("取消选中：" + event.getItem());
+                        break;
+                }
+            }
+        });
+
+        //
+        jCBSelectChangeField = new JComboBox<String>();//查询字段
+        jCBSelectChangeField.addItem("转系");
+        jCBSelectChangeField.addItem("休学");
+        jCBSelectChangeField.addItem("复学");
+        jCBSelectChangeField.addItem("退学");
+        jCBSelectChangeField.addItem("毕业");
+        jCBSelectChangeField.addItemListener(new ItemListener() {//下拉框事件监听
+            public void itemStateChanged(ItemEvent event) {
+                switch (event.getStateChange()) {
+                    case ItemEvent.SELECTED:
+                        SelectChangeFieldStr = (String) event.getItem();
+                        System.out.println("选中：" + SelectChangeFieldStr);
                         break;
                     case ItemEvent.DESELECTED:
                         System.out.println("取消选中：" + event.getItem());
@@ -186,21 +197,15 @@ public class StudentInfo extends JFrame implements ActionListener {
 
         jP4.add(jLSStudentID);
         jP4.add(jTFSStudentID);
-        jP4.add(jLSName);
-        jP4.add(jTFSName);
-        jP4.add(jLSSex);
-        jP4.add(jTFSSex);
+        jP4.add(jLSChange);
+        jP4.add(jCBSelectChangeField);
         jP4.setLayout(new FlowLayout(FlowLayout.CENTER));
         jP4.setPreferredSize(new Dimension(50, 50));
 
-        jP5.add(jLSClass);
-        jP5.add(jTFSClass);
-        jP5.add(jLSDepartment);
-        jP5.add(jTFSDepartment);
-        jP5.add(jLSBirthday);
-        jP5.add(jTFSBirthday);
-        jP5.add(jLSNativePlace);
-        jP5.add(jTFSNativePlace);
+        jP5.add(jLSRecTime);
+        jP5.add(jTFSRecTime);
+        jP5.add(jLSDesc);
+        jP5.add(jTFSDesc);
         jP5.setLayout(new FlowLayout(FlowLayout.CENTER));
         jP5.setPreferredSize(new Dimension(50, 50));
 
@@ -214,7 +219,7 @@ public class StudentInfo extends JFrame implements ActionListener {
         jPTop.add(jP1);
         jPTop.add(jP2);
         jPTop.setLayout(new BoxLayout(jPTop, BoxLayout.Y_AXIS));
-        jPBottom.setLayout(new GridLayout(5, 1));
+        jPBottom.setLayout(new GridLayout(4, 1));
         jPBottom.add(jP3);
         jPBottom.add(jP4);
         jPBottom.add(jP5);
@@ -238,13 +243,9 @@ public class StudentInfo extends JFrame implements ActionListener {
                 public void mouseClicked(MouseEvent e) {
                     studentJTable.clearSelection();
                     jTFSStudentID.setText("");
-                    jTFSName.setText("");
-                    jTFSSex.setText("");
-                    jTFSClass.setText("");
-                    jTFSDepartment.setText("");
-                    jTFSBirthday.setText("");
-                    jTFSNativePlace.setText("");
-                    jTFSStudentID.setEditable(true);
+                    //jTFSChange.setText("");
+                    jTFSRecTime.setText("");
+                    jTFSDesc.setText("");
                 }
             });
         }
@@ -264,22 +265,14 @@ public class StudentInfo extends JFrame implements ActionListener {
             queryAllProcess();
         } else if (e.getActionCommand().equals("插入")
                 && !jTFSStudentID.getText().isEmpty()
-                && !jTFSName.getText().isEmpty()
-                && !jTFSSex.getText().isEmpty()
-                && !jTFSClass.getText().isEmpty()
-                && !jTFSDepartment.getText().isEmpty()
-                && !jTFSBirthday.getText().isEmpty()
-                && !jTFSNativePlace.getText().isEmpty()) {
+                && !jTFSRecTime.getText().isEmpty()
+                && !jTFSDesc.getText().isEmpty()) {
             System.out.println("actionPerformed(). 插入");
             insertProcess();
         } else if (e.getActionCommand().equals("更新")
                 && !jTFSStudentID.getText().isEmpty()
-                && !jTFSName.getText().isEmpty()
-                && !jTFSSex.getText().isEmpty()
-                && !jTFSClass.getText().isEmpty()
-                && !jTFSDepartment.getText().isEmpty()
-                && !jTFSBirthday.getText().isEmpty()
-                && !jTFSNativePlace.getText().isEmpty()) {
+                && !jTFSRecTime.getText().isEmpty()
+                && !jTFSDesc.getText().isEmpty()) {
             System.out.println("actionPerformed(). 更新");
             updateProcess();
         } else if (e.getActionCommand().equals("删除当前记录")) {
@@ -294,10 +287,10 @@ public class StudentInfo extends JFrame implements ActionListener {
     public void queryProcess(String sQueryField) {
         try {
             // 建立查询条件
-            String sql = "select * from student inner join class on class.cID = student.Class inner join department on department.dID = student.Department where ";
+            String sql = "select * from changexj inner join change_code on changexj.ChangeID = change_code.code where ";
             String queryFieldStr = jCBSelectQueryFieldTransfer(SelectQueryFieldStr);
 
-            if (queryFieldStr.equals("StudentID")||queryFieldStr.equals("Class")||queryFieldStr.equals("Department")) {
+            if (queryFieldStr.equals("StudentID") || queryFieldStr.equals("ChangeID")) {
                 sql = sql + queryFieldStr;
                 sql = sql + " = " + sQueryField;
             } else {
@@ -315,13 +308,11 @@ public class StudentInfo extends JFrame implements ActionListener {
             studentVector.clear();
             while (rs.next()) {
                 Vector v = new Vector();
+                v.add(Integer.valueOf(rs.getInt("cID")));
                 v.add(Integer.valueOf(rs.getInt("StudentID")));
-                v.add(rs.getString("sName"));
-                v.add(rs.getString("sSex"));
-                v.add(rs.getString("class.cClassName"));
-                v.add(rs.getString("department.dDepName"));
-                v.add(rs.getString("sBirthday"));
-                v.add(rs.getString("sNativePlace"));
+                v.add(rs.getString("change_code.Description"));
+                v.add(rs.getString("cRecTime"));
+                v.add(rs.getString("cDescription"));
                 studentVector.add(v);
             }
 
@@ -344,7 +335,7 @@ public class StudentInfo extends JFrame implements ActionListener {
             public void run() {
                 try {
                     // 建立查询条件
-                    String sql = "select * from student inner join class on class.cID = student.Class inner join department on department.dID = student.Department;";
+                    String sql = "select * from changexj inner join change_code on changexj.ChangeID = change_code.code;";
                     System.out.println("queryAllProcess(). sql = " + sql);
 
                     dbProcess.connect();
@@ -354,16 +345,13 @@ public class StudentInfo extends JFrame implements ActionListener {
                     studentVector.clear();
                     while (rs.next()) {
                         Vector v = new Vector();
+                        v.add(Integer.valueOf(rs.getInt("cID")));
                         v.add(Integer.valueOf(rs.getInt("StudentID")));
-                        v.add(rs.getString("sName"));
-                        v.add(rs.getString("sSex"));
-                        v.add(rs.getString("class.cClassName"));
-                        v.add(rs.getString("department.dDepName"));
-                        v.add(rs.getString("sBirthday"));
-                        v.add(rs.getString("sNativePlace"));
+                        v.add(rs.getString("change_code.Description"));
+                        v.add(rs.getString("cRecTime"));
+                        v.add(rs.getString("cDescription"));
                         studentVector.add(v);
                     }
-
 
                     studentJTable.updateUI();
                     dbProcess.disconnect();
@@ -378,40 +366,37 @@ public class StudentInfo extends JFrame implements ActionListener {
 
     public void insertProcess() {
         String StudentID = jTFSStudentID.getText().trim();
-        String sName = jTFSName.getText().trim();
-        String sSex = jTFSSex.getText().trim();
-        String Class = jTFSClass.getText().trim();
-        String Department = jTFSDepartment.getText().trim();
-        String sBirthday = jTFSBirthday.getText().trim();
-        String sNativePlace = jTFSNativePlace.getText().trim();
-        int trueClass = 0,trueDept=0;
+        int sChange = jCBSelectChangeFieldTransfer(SelectChangeFieldStr);
+        String sRecTime = jTFSRecTime.getText().trim();
+        String sDesc = jTFSDesc.getText().trim();
+        int trueChange = 0;
 
-        String getClassDepartment = "select class.cID,department.dID from student,class,department where class.cClassName like '%"+Class+"%' and department.dDepName like '%"+Department+"%';";
+        /*String getClassDepartment = "select Change_ChangeID.code from Change_ChangeID where Change_ChangeID.Description = '" + sChange + "';";
         System.out.println("getClassDepartment. sql = " + getClassDepartment);
         dbProcess.connect();
         ResultSet rs = dbProcess.executeQuery(getClassDepartment);
         try {
-            trueClass = rs.getInt("cID");
-            trueDept =  rs.getInt("dID");
+            while (rs.next()) {
+                trueChange = rs.getInt("code");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        dbProcess.disconnect();
+        dbProcess.disconnect();*/
 
         // 建立插入条件
-        String sql = "insert into student values(";
-        sql = sql + StudentID + ",'";
-        sql = sql + sName + "','";
-        sql = sql + sSex + "',";
-        sql = sql + trueClass + ",";
-        sql = sql + trueDept + ",'";
-        sql = sql + sBirthday + "','";
-        sql = sql + sNativePlace + "');";
+        String sql = "insert into changexj(StudentID,ChangeID,cRecTime,cDescription) values(";
+        sql = sql + StudentID + ",";
+        sql = sql + sChange + ",'";
+        sql = sql + sRecTime + "','";
+        sql = sql + sDesc + "');";
 
         System.out.println("insertProcess(). sql = " + sql);
         try {
             if (dbProcess.executeUpdate(sql) < 1) {
                 System.out.println("insertProcess(). insert database failed.");
+                JOptionPane.showMessageDialog(null,
+                        "数据操作错误。请按照以下步骤排除：\n1. 请检查该学号学生是否存在于学生信息库中。\n2. 请检查填写时「时间」格式是否正确，鼠标悬浮在输入框上可以查看提示。", "错误", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
             System.out.println("e = " + e);
@@ -423,42 +408,39 @@ public class StudentInfo extends JFrame implements ActionListener {
 
 
     public void updateProcess() {
+        String ID = jTFSID.getText().trim();
         String StudentID = jTFSStudentID.getText().trim();
-        String sName = jTFSName.getText().trim();
-        String sSex = jTFSSex.getText().trim();
-        String Class = jTFSClass.getText().trim();
-        String Department = jTFSDepartment.getText().trim();
-        String sBirthday = jTFSBirthday.getText().trim();
-        String sNativePlace = jTFSNativePlace.getText().trim();
+        int rChange = jCBSelectChangeFieldTransfer(SelectChangeFieldStr);
+        String cRecTime = jTFSRecTime.getText().trim();
+        String rDesc = jTFSDesc.getText().trim();
+        int trueChange = -1;
 
-        int trueClass = 0,trueDept=0;
-        String getClassDepartment = "select class.cID,department.dID from student,class,department where class.cClassName = '"+Class+"' and department.dDepName='"+Department+"';";
+        /*String getClassDepartment = "select Change_ChangeID.code from Change_ChangeID where Change_ChangeID.Description = '" + rChange + "';";
         System.out.println("getClassDepartment. sql = " + getClassDepartment);
         dbProcess.connect();
-
         ResultSet rs = dbProcess.executeQuery(getClassDepartment);
         try {
             while (rs.next()) {
-                trueClass = rs.getInt("cID");
-                trueDept = rs.getInt("dID");
+                trueChange = rs.getInt("code");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        dbProcess.disconnect();
+        dbProcess.disconnect();*/
+
         // 建立更新条件
-        String sql = "update student set sName = '";
-        sql = sql + sName + "', sSex = '";
-        sql = sql + sSex + "', Class = ";
-        sql = sql + trueClass + ", Department = ";
-        sql = sql + trueDept + ", sBirthday = '";
-        sql = sql + sBirthday + "', sNativePlace = '";
-        sql = sql + sNativePlace + "'";
-        sql = sql + " WHERE StudentID = " + StudentID + ";";
+        String sql = "update changexj set StudentID = ";
+        sql = sql + StudentID + ", ChangeID = ";
+        sql = sql + rChange + ", cRecTime = '";
+        sql = sql + cRecTime + "', cDescription = '";
+        sql = sql + rDesc + "'";
+        sql = sql + " WHERE cID = " + ID + ";";
         System.out.println("updateProcess(). sql = " + sql);
         try {
             if (dbProcess.executeUpdate(sql) < 1) {
                 System.out.println("updateProcess(). update database failed.");
+                JOptionPane.showMessageDialog(null,
+                        "数据操作错误。请按照以下步骤排除：\n1. 请检查该学号学生是否存在于学生信息库中。\n2. 请检查填写时「时间」格式是否正确，鼠标悬浮在输入框上可以查看提示。", "错误", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
             System.out.println("e = " + e);
@@ -471,10 +453,10 @@ public class StudentInfo extends JFrame implements ActionListener {
 
     public void deleteCurrentRecordProcess() {
 
-        String StudentID = jTFSStudentID.getText().trim();
+        String ID = jTFSID.getText().trim();
 
         // 建立删除条件
-        String sql = "delete from student where StudentID = " + StudentID + ";";
+        String sql = "delete from changexj where cID = " + ID + ";";
         System.out.println("deleteCurrentRecordProcess(). sql = " + sql);
         try {
             if (dbProcess.executeUpdate(sql) < 1) {
@@ -491,7 +473,7 @@ public class StudentInfo extends JFrame implements ActionListener {
 
     public void deleteAllRecordsProcess() {
         // 建立删除条件
-        String sql = "delete from student;";
+        String sql = "delete from changexj;";
         System.out.println("deleteAllRecordsProcess(). sql = " + sql);
         try {
             if (dbProcess.executeUpdate(sql) < 1) {
@@ -512,18 +494,31 @@ public class StudentInfo extends JFrame implements ActionListener {
 
         if (InputStr.equals("学号")) {
             outputStr = "StudentID";
-        } else if (InputStr.equals("姓名")) {
-            outputStr = "sName";
-        } else if (InputStr.equals("性别")) {
-            outputStr = "sSex";
-        } else if (InputStr.equals("班级")) {
-            outputStr = "Class";
-        } else if (InputStr.equals("学院")) {
-            outputStr = "Department";
-        } else if (InputStr.equals("生日")) {
-            outputStr = "sBirthday";
-        } else if (InputStr.equals("籍贯")) {
-            outputStr = "sNativePlace";
+        } else if (InputStr.equals("学籍")) {
+            outputStr = "ChangeID";
+        } else if (InputStr.equals("时间")) {
+            outputStr = "cRecTime";
+        } else if (InputStr.equals("详情")) {
+            outputStr = "cDescription";
+        }
+        System.out.println("jCBSelectQueryFieldTransfer(). outputStr = " + outputStr);
+        return outputStr;
+    }
+
+    public int jCBSelectChangeFieldTransfer(String InputStr) {
+        int outputStr = -1;
+        System.out.println("jCBSelectQueryFieldTransfer(). InputStr = " + InputStr);
+
+        if (InputStr.equals("转系")) {
+            outputStr = 0;
+        } else if (InputStr.equals("休学")) {
+            outputStr = 1;
+        } else if (InputStr.equals("复学")) {
+            outputStr = 2;
+        } else if (InputStr.equals("退学")) {
+            outputStr = 3;
+        } else if (InputStr.equals("毕业")) {
+            outputStr = 4;
         }
         System.out.println("jCBSelectQueryFieldTransfer(). outputStr = " + outputStr);
         return outputStr;

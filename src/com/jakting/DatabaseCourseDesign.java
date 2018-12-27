@@ -1,7 +1,9 @@
 package com.jakting;
 
 
-import com.jakting.fragment.StatusChange;
+import com.jakting.fragment.Change;
+import com.jakting.fragment.Punishment;
+import com.jakting.fragment.Reward;
 import com.jakting.fragment.StudentInfo;
 import com.jakting.utils.InitGlobalFont;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
@@ -11,43 +13,47 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 
-public class DatabaseCourseDesign extends JFrame{
+public class DatabaseCourseDesign extends JFrame {
     // 定义组件
     private int count = 0;
     JTabbedPane jTabbedPane = null;
 
     JButton jToolbar_Student = null;//查询
-    JButton jToolbar_Out = null;//查询
-    JButton jToolbar_Great = null;//查询
-    JButton jToolbar_Bad = null;//查询
+    JButton jToolbar_Reward = null;//查询
+    JButton jToolbar_Punish = null;//查询
+    JButton jToolbar_Change = null;//查询
 
 
+    public static JPanel jStu, jReward, jPunish, jChange;
 
-    public static JPanel jStu, jOut, jGreat, jBad;
     // 构造函数
     public DatabaseCourseDesign() {
         // 创建组件
         jTabbedPane = new JTabbedPane();
 
         jToolbar_Student = new JButton("学生信息");
-        jToolbar_Out = new JButton("学籍变更");
-        jToolbar_Great = new JButton("获奖查询");
-        jToolbar_Bad = new JButton("处分查询");
+        jToolbar_Reward = new JButton("获奖情况");
+        jToolbar_Punish = new JButton("处分情况");
+        jToolbar_Change = new JButton("学籍变更");
 
         jStu = new JPanel();
-        jOut = new JPanel();
-        jGreat = new JPanel();
-        jBad = new JPanel();
+        jReward = new JPanel();
+        jPunish = new JPanel();
+        jChange = new JPanel();
 
         StudentInfo getjStu = new StudentInfo();
         jStu = getjStu.addAndSelect(jStu);
-        StatusChange getjOut = new StatusChange();
-        jOut = getjOut.addAndSelect(jOut);
+        Reward getjReward = new Reward();
+        jReward = getjReward.addAndSelect(jReward);
+        Punishment getjPunish = new Punishment();
+        jPunish = getjPunish.addAndSelect(jPunish);
+        Change getjChange = new Change();
+        jChange = getjChange.addAndSelect(jChange);
 
         jTabbedPane.addTab("学生信息", jStu);
-        jTabbedPane.addTab("学籍变更", jOut);
-        jTabbedPane.addTab("获奖记录", jGreat);
-        jTabbedPane.addTab("处分记录", jBad);
+        jTabbedPane.addTab("获奖情况", jReward);
+        jTabbedPane.addTab("处分情况", jPunish);
+        jTabbedPane.addTab("学籍变更", jChange);
         jTabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -67,7 +73,7 @@ public class DatabaseCourseDesign extends JFrame{
         this.setLocation(300, 300);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
-        this.setResizable(true);
+        this.setResizable(false);
     }
 
 
